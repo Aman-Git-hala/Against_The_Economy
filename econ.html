@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Time Machine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; 
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #2dd4bf; /* teal-400 */
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #1e293b; /* slate-800 */
+            margin-top: -6px; 
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #2dd4bf;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #1e293b;
+        }
+
+        /* Animation for elements fading in */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-white flex items-center justify-center min-h-screen p-4">
+
+    <main class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Left Column: Controls -->
+        <div class="lg:col-span-1 bg-slate-800/50 p-6 rounded-2xl shadow-2xl border border-slate-700 flex flex-col space-y-6">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-500">
+                    Salary Time Machine
+                </h1>
+                <p class="text-sm text-slate-400 mt-1">
+                    Don’t just time-travel your salary—time-travel your money.
+                </p>
+            </div>
+
+            <!-- Financial Inputs -->
+            <div class="space-y-4" id="controls">
+                <!-- Salary -->
+                <div>
+                    <div class="flex justify-between items-center">
+                        <label for="salary" class="text-sm font-medium text-slate-300">Current Monthly Salary</label>
+                        <span id="salary-value" class="px-3 py-1 text-sm font-semibold text-cyan-300 bg-slate-700 rounded-md shadow-inner"></span>
+                    </div>
+                    <input type="range" id="salary" min="10000" max="500000" step="1000" value="50000" class="w-full h-2 mt-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+                <!-- Raise -->
+                <div>
+                    <div class="flex justify-between items-center">
+                        <label for="raise" class="text-sm font-medium text-slate-300">Expected Annual Raise</label>
+                        <span id="raise-value" class="px-3 py-1 text-sm font-semibold text-cyan-300 bg-slate-700 rounded-md shadow-inner"></span>
+                    </div>
+                    <input type="range" id="raise" min="0" max="20" step="0.5" value="4" class="w-full h-2 mt-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+                 <!-- Inflation -->
+                <div>
+                    <div class="flex justify-between items-center">
+                        <label for="inflation" class="text-sm font-medium text-slate-300">Estimated Annual Inflation</label>
+                        <span id="inflation-value" class="px-3 py-1 text-sm font-semibold text-cyan-300 bg-slate-700 rounded-md shadow-inner"></span>
+                    </div>
+                    <input type="range" id="inflation" min="0" max="20" step="0.5" value="6" class="w-full h-2 mt-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+                 <!-- Years -->
+                <div>
+                    <div class="flex justify-between items-center">
+                        <label for="years" class="text-sm font-medium text-slate-300">Years to Project</label>
+                        <span id="years-value" class="px-3 py-1 text-sm font-semibold text-cyan-300 bg-slate-700 rounded-md shadow-inner"></span>
+                    </div>
+                    <input type="range" id="years" min="1" max="50" step="1" value="20" class="w-full h-2 mt-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-700 my-4"></div>
+
+            <!-- Investment Inputs -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-teal-400">Investment Parallel Universe</h2>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" id="show-investment" class="sr-only peer" checked>
+                      <div class="w-11 h-6 bg-slate-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+                    </label>
+                </div>
+                <div id="investment-controls" class="space-y-4">
+                    <!-- Monthly Investment -->
+                    <div>
+                         <div class="flex justify-between items-center">
+                            <label for="monthly-investment" class="text-sm font-medium text-slate-300">Monthly Savings</label>
+                            <span id="monthly-investment-value" class="px-3 py-1 text-sm font-semibold text-teal-300 bg-slate-700 rounded-md shadow-inner"></span>
+                        </div>
+                        <input type="range" id="monthly-investment" min="0" max="100000" step="500" value="10000" class="w-full h-2 mt-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <!-- Investment Return -->
+                    <div>
+                         <div class="flex justify-between items-center">
+                            <label for="investment-return" class="text-sm font-medium text-slate-300">Expected Annual Return</label>
+                            <span id="investment-return-value" class="px-3 py-1 text-sm font-semibold text-teal-300 bg-slate-700 rounded-md shadow-inner"></span>
+                        </div>
+                        <input type="range" id="investment-return" min="0" max="30" step="0.5" value="12" class="w-full h-2 mt-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Visualization & Results -->
+        <div class="lg:col-span-2 bg-slate-800/50 p-6 rounded-2xl shadow-2xl border border-slate-700 flex flex-col">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- Stat Card: Future Salary -->
+                <div class="bg-slate-800 p-4 rounded-lg shadow-lg border border-slate-700 transform hover:scale-105 transition-transform duration-300">
+                    <h3 class="text-sm font-medium text-slate-400">Future Salary</h3>
+                    <p id="future-salary" class="text-2xl font-bold text-cyan-400"></p>
+                    <p class="text-xs text-slate-500 mt-1">Your nominal monthly salary.</p>
+                </div>
+                <!-- Stat Card: Purchasing Power -->
+                <div class="bg-slate-800 p-4 rounded-lg shadow-lg border border-slate-700 transform hover:scale-105 transition-transform duration-300">
+                    <h3 class="text-sm font-medium text-slate-400">Purchasing Power</h3>
+                    <p id="purchasing-power" class="text-2xl font-bold text-red-500"></p>
+                    <p class="text-xs text-slate-500 mt-1">...in today's money. The "scary number".</p>
+                </div>
+                <!-- Stat Card: Investment Value -->
+                <div class="bg-slate-800 p-4 rounded-lg shadow-lg border border-slate-700 transform hover:scale-105 transition-transform duration-300">
+                    <h3 class="text-sm font-medium text-slate-400">Investment Value</h3>
+                    <p id="investment-value" class="text-2xl font-bold text-green-400"></p>
+                    <p id="investment-description" class="text-xs text-slate-500 mt-1"></p>
+                </div>
+            </div>
+
+            <div class="flex-grow h-96">
+                <canvas id="projectionChart"></canvas>
+            </div>
+
+            <!-- Relatable Example -->
+            <div id="relatable-example" class="mt-6 text-center bg-slate-800 p-4 rounded-lg border border-slate-700"></div>
+        </div>
+    </main>
+
+    <script>
+        // --- DOM ELEMENT REFERENCES ---
+        const salaryInput = document.getElementById('salary');
+        const salaryValue = document.getElementById('salary-value');
+        const raiseInput = document.getElementById('raise');
+        const raiseValue = document.getElementById('raise-value');
+        const inflationInput = document.getElementById('inflation');
+        const inflationValue = document.getElementById('inflation-value');
+        const yearsInput = document.getElementById('years');
+        const yearsValue = document.getElementById('years-value');
+        
+        const showInvestmentToggle = document.getElementById('show-investment');
+        const investmentControls = document.getElementById('investment-controls');
+        const monthlyInvestmentInput = document.getElementById('monthly-investment');
+        const monthlyInvestmentValue = document.getElementById('monthly-investment-value');
+        const investmentReturnInput = document.getElementById('investment-return');
+        const investmentReturnValue = document.getElementById('investment-return-value');
+
+        const futureSalaryEl = document.getElementById('future-salary');
+        const purchasingPowerEl = document.getElementById('purchasing-power');
+        const investmentValueEl = document.getElementById('investment-value');
+        const investmentDescriptionEl = document.getElementById('investment-description');
+        const relatableExampleEl = document.getElementById('relatable-example');
+
+        const chartCanvas = document.getElementById('projectionChart').getContext('2d');
+        let projectionChart;
+
+        // UTILITY FUNCTIONS
+        const formatCurrency = (val) => `₹${val.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+        const formatPercent = (val) => `${val}%`;
+        
+        // logic to calculate
+        function calculateProjections() {
+            const salary = Number(salaryInput.value);
+            const raise = Number(raiseInput.value) / 100;
+            const inflation = Number(inflationInput.value) / 100;
+            const years = Number(yearsInput.value);
+            const monthlyInvestment = Number(monthlyInvestmentInput.value);
+            const investmentReturn = Number(investmentReturnInput.value) / 100;
+
+            const labels = ['Today'];
+            const salaryData = [salary];
+            const powerData = [salary];
+            const investmentData = [0];
+            
+            let currentSalary = salary;
+            let investmentValue = 0;
+            const monthlyInvestmentRate = investmentReturn / 12;
+
+            for (let i = 1; i <= years; i++) {
+                labels.push(`Year ${i}`);
+                currentSalary *= (1 + raise);
+                const purchasingPower = currentSalary / Math.pow(1 + inflation, i);
+                
+                // Calculate investment growth over 12 months for the year
+                for (let month = 0; month < 12; month++) {
+                    investmentValue = (investmentValue + monthlyInvestment) * (1 + monthlyInvestmentRate);
+                }
+
+                salaryData.push(currentSalary);
+                powerData.push(purchasingPower);
+                investmentData.push(investmentValue);
+            }
+            
+            return { labels, salaryData, powerData, investmentData };
+        }
+
+        // --- CHART INITIALIZATION & UPDATING ---
+        function initializeChart() {
+            projectionChart = new Chart(chartCanvas, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Nominal Salary',
+                            data: [],
+                            borderColor: '#2dd4bf', // teal-400
+                            backgroundColor: '#2dd4bf20',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: false,
+                        },
+                        {
+                            label: 'Purchasing Power',
+                            data: [],
+                            borderColor: '#f43f5e', // red-500
+                            backgroundColor: '#f43f5e20',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: false,
+                        },
+                        {
+                            label: 'Investment Value',
+                            data: [],
+                            borderColor: '#4ade80', // green-400
+                            backgroundColor: '#4ade8020',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: false,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#94a3b8', // slate-400
+                                callback: (value) => `₹${(value / 1000)}k`
+                            },
+                            grid: {
+                                color: '#334155' // slate-700
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#94a3b8' // slate-400
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0' // slate-200
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- MAIN UPDATE FUNCTION ---
+        function updateDashboard() {
+            // Update slider display values
+            salaryValue.textContent = formatCurrency(Number(salaryInput.value));
+            raiseValue.textContent = formatPercent(Number(raiseInput.value));
+            inflationValue.textContent = formatPercent(Number(inflationInput.value));
+            yearsValue.textContent = `${yearsInput.value} yrs`;
+            monthlyInvestmentValue.textContent = formatCurrency(Number(monthlyInvestmentInput.value));
+            investmentReturnValue.textContent = formatPercent(Number(investmentReturnInput.value));
+
+            // Get new calculations
+            const { labels, salaryData, powerData, investmentData } = calculateProjections();
+
+            // Update stat cards
+            const finalSalary = salaryData[salaryData.length - 1];
+            const finalPower = powerData[powerData.length - 1];
+            const finalInvestment = investmentData[investmentData.length - 1];
+            const years = yearsInput.value;
+
+            futureSalaryEl.textContent = formatCurrency(finalSalary);
+            purchasingPowerEl.textContent = formatCurrency(finalPower);
+            investmentValueEl.textContent = formatCurrency(finalInvestment);
+            investmentDescriptionEl.textContent = `Total after ${years} years of investing.`;
+            
+            // Update Chart
+            projectionChart.data.labels = labels;
+            projectionChart.data.datasets[0].data = salaryData;
+            projectionChart.data.datasets[1].data = powerData;
+            projectionChart.data.datasets[2].data = investmentData;
+            projectionChart.data.datasets[2].hidden = !showInvestmentToggle.checked;
+            projectionChart.update();
+
+            // Update Relatable Example
+            const phonePrice = 80000;
+            const phonesToday = Math.floor((Number(salaryInput.value) * 12) / phonePrice);
+            const phonesFuture = Math.floor((finalPower * 12) / phonePrice);
+            relatableExampleEl.innerHTML = `
+                <h3 class="font-semibold text-slate-300">Here's what that means...</h3>
+                <p class="text-slate-400 text-sm">Assuming a flagship phone costs ${formatCurrency(phonePrice)} in today's money:</p>
+                <p class="mt-2">
+                    <span class="font-bold text-cyan-400">Today</span>, your annual salary can buy <span class="font-bold text-xl text-white">${phonesToday}</span> phones.
+                    <br/>
+                    In <span class="font-bold text-red-500">${years} years</span>, it will only buy <span class="font-bold text-xl text-white">${phonesFuture}</span> phones worth of goods.
+                </p>`;
+        }
+
+        // EVENT LISTENERS
+        const allInputs = document.querySelectorAll('input[type="range"]');
+        allInputs.forEach(input => input.addEventListener('input', updateDashboard));
+
+        showInvestmentToggle.addEventListener('change', () => {
+            investmentControls.classList.toggle('hidden');
+            investmentControls.classList.add('animate-fade-in');
+            updateDashboard();
+        });
+
+        // INITIALIZE THE APP
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeChart();
+            updateDashboard();
+        });
+    </script>
+</body>
+</html>
